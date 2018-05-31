@@ -410,7 +410,7 @@ main {
 .cell {
   border: 1px solid white;
   border-radius: 5px;
-  width: 5%;
+  width: 10%;
   background-color: #EEEEEE; }
 
 .game-board {
