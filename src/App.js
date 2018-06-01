@@ -34,6 +34,7 @@ class App extends Component {
     let nextPosition = 1;
     let upperEnd = nextRow - 1; //9
     let lowEnd = nextRow + 1;//11
+    let leftRightDiagnalOnTheBorder = nextRow * nextRow;
     let statusOptionsObject = {'alive' : 'dead', 'dead' : 'alive'}
     this.setState(currentState => {
       let boardArray = [...currentState.boardArray];
@@ -41,6 +42,7 @@ class App extends Component {
        boardArray.forEach((cell, i) => {
         let position = cell.position;
          let positionTwo = cell.positionTwo;
+         let positionThree = cell.positionThree;
         let ArrayToCount;
          
          let statusToCompare = statusOptionsObject[cell.status];
@@ -50,7 +52,15 @@ class App extends Component {
           //  && ele.status == 'alive'
            return ((position - nextPosition == ele.position || position + nextPosition == ele.position) || 
                   (position - lowEnd <= ele.position && position - upperEnd >= ele.position) || 
-             (position + lowEnd >= ele.position && position + upperEnd <= ele.position)) && ele.status === 'alive';
+             (position + lowEnd >= ele.position && position + upperEnd <= ele.position)) && ele.status === 'alive' ||
+             (positionTwo != null && (positionTwo - nextPosition == ele.positionTwo || positionTwo + nextPosition == ele.positionTwo) ||
+             (positionTwo - lowEnd <= ele.positionTwo && positionTwo - upperEnd >= ele.positionTwo) ||
+             (positionTwo + lowEnd >= ele.positionTwo && positionTwo + upperEnd <= ele.positionTwo)) && ele.status === 'alive' ||
+             (positionThree != null && (positionThree - nextPosition == ele.positionThree || positionThree + nextPosition == ele.positionTwo) ||
+             (positionThree - lowEnd <= ele.positionThree && positionThree - upperEnd >= ele.positionThree) ||
+             (positionThree + lowEnd >= ele.positionThree && positionThree + upperEnd <= ele.positionThree)) && ele.status === 'alive'
+
+
              //Need || then top to bottom CONNECTION
           })
  
@@ -111,17 +121,27 @@ class App extends Component {
     const boardArray = [...Array(size)].map((e, i ) => {
    
       let positionTwo = null;
+      let positionThree = null;
+      let positionFour = null;
       if (i < lastNumberInFirstRow){
         positionTwo = i + startPositionAtOne + totalSize;
       }
 
-      else if (i >= firstNumberInLastRow){
+       if (i >= firstNumberInLastRow){
         positionTwo = i + startPositionAtOne - totalSize;
       }
+
+       if (((i + 1) % lastNumberInFirstRow) === 0) {
+        positionThree = i + startPositionAtOne;
+      }
+       if (((i + 1) % lastNumberInFirstRow) === 1) {
+        positionFour = i + startPositionAtOne;
+      }
     
-      return { status: 'dead', position: i + startPositionAtOne, positionTwo};
+      return { status: 'dead', position: i + startPositionAtOne, positionTwo, positionThree, positionFour};
     });
     boardArray[54].status = 'alive';
+    console.log("boardArray", boardArray);
     return boardArray;
   }
 
