@@ -33,8 +33,8 @@ class App extends Component {
     let rowSize = this.state.boardSize.size;
     let boardArray = this.state.boardArray;
     const cellSearchModifiers = [{ y: 0, x: -1 }, { y: 1, x: -1 },{ y: 1, x: 0 }, { y: 1, x: 1 },
-    { y: 0, x: 1 }, { y: -1, x: +1 }, { y: -1, x: 0 }, { y: -1, x: -1 }]
-
+      { y: 0, x: 1 }, { y: -1, x: +1 }, { y: -1, x: 0 }, { y: -1, x: -1 },  { y: 0, x: 0 }]
+//
     const aliveArray = boardArray.filter(cell =>{
 
       return cell.status === 'alive';
@@ -104,28 +104,13 @@ class App extends Component {
       if (count === 3 && boardArray[position].status !== 'alive'){
         newStatus = 'alive';
       }
-      else if ((count >= 4 || count <= 1) && boardArray[position].status !== 'dead'){
+      else if ((count >= 5 || count <= 2) && boardArray[position].status !== 'dead'){
         newStatus = 'dead'
       }
       return newStatus;
     }
   }
 
-  checkCellCycle(cellArray, cellStatus){
-    let newStatus;
-    if(cellStatus === 'dead' && cellArray.length === 3){
-      // console.log('change alive');
-      newStatus = 'alive';
-    }
-    else if (cellStatus === 'alive' && (cellArray.length >= 4 || cellArray.length <= 1 )) {
-      // console.log('change status dead');
-      newStatus = 'dead';
-    }
-    else{
-      newStatus = cellStatus;
-    }
-    return newStatus
-  }
 
 
   handleClearGame(e){
