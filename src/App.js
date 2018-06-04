@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ControlGameBtns from './components/controlGameBtns.js'
-import Layout from './components/Layout';
+
 import GameBoard from './components/GameBoard';
 
 class App extends Component {
@@ -30,48 +30,85 @@ class App extends Component {
   }
 
   gameAlgo(){
-    let nextRow = this.state.boardSize.size;
-    let nextPosition = 1;
-    let upperEnd = nextRow - 1; //9
-    let lowEnd = nextRow + 1;//11
-    let leftRightDiagnalOnTheBorder = nextRow * nextRow;
-    let statusOptionsObject = {'alive' : 'dead', 'dead' : 'alive'}
-    this.setState(currentState => {
-      let boardArray = [...currentState.boardArray];
+    let rowSize = this.state.boardSize.size;
+    let boardArray = this.state.boardArray;
+    const cellSearchModifiers = [{ y: 0, x: -1 }, { y: 1, x: -1 },{ y: 1, x: 0 }, { y: 1, x: 1 },
+    { y: 0, x: 1 }, { y: -1, x: +1 }, { y: -1, x: 0 }, { y: -1, x: -1 }]
 
-       boardArray.forEach((cell, i) => {
-        let position = cell.position;
-         let positionTwo = cell.positionTwo;
-         let positionThree = cell.positionThree;
-        let ArrayToCount;
-         
-         let statusToCompare = statusOptionsObject[cell.status];
-        // if(cell.status === 'dead'){
-          
-          ArrayToCount = boardArray.filter(ele => {
-          //  && ele.status == 'alive'
-           return ((position - nextPosition == ele.position || position + nextPosition == ele.position) || 
-                  (position - lowEnd <= ele.position && position - upperEnd >= ele.position) || 
-             (position + lowEnd >= ele.position && position + upperEnd <= ele.position)) && ele.status === 'alive' ||
-             (positionTwo != null && (positionTwo - nextPosition == ele.positionTwo || positionTwo + nextPosition == ele.positionTwo) ||
-             (positionTwo - lowEnd <= ele.positionTwo && positionTwo - upperEnd >= ele.positionTwo) ||
-             (positionTwo + lowEnd >= ele.positionTwo && positionTwo + upperEnd <= ele.positionTwo)) && ele.status === 'alive' ||
-             (positionThree != null && (positionThree - nextPosition == ele.positionThree || positionThree + nextPosition == ele.positionTwo) ||
-             (positionThree - lowEnd <= ele.positionThree && positionThree - upperEnd >= ele.positionThree) ||
-             (positionThree + lowEnd >= ele.positionThree && positionThree + upperEnd <= ele.positionThree)) && ele.status === 'alive'
+    const aliveArray = boardArray.filter(cell =>{
 
-
-             //Need || then top to bottom CONNECTION
-          })
- 
-
-         console.log("ArrayToCount", i, ArrayToCount);
-
-        let newStatus = this.checkCellCycle(ArrayToCount, cell.status);
-         console.log("newStatus", newStatus);
-       });
-      
+      return cell.status === 'alive';
     })
+    let arrayToCount = []
+    aliveArray.forEach(cell =>{
+      // for each alive cell add 1 count to each neighbor
+      let setOfNeightbors = cellSearchModifiers.map(search => {
+        let newY = search.y + cell.positionTwo.y;
+        let newX = search.x + cell.positionTwo.x;
+        newY = modulo(newY, rowSize) * rowSize;
+        newX = modulo(newX, rowSize);
+        let index = newY + newX;
+        return {index};
+      })
+
+      arrayToCount = [...arrayToCount, ...setOfNeightbors]
+      console.log("arrayToCount", arrayToCount);
+    });
+
+    // count how many times a cell touches a neighbor alive or dead cell
+    const occurrences = arrayToCount.reduce(function (obj, item) {
+      let stringObj = JSON.stringify(item);
+
+
+                          //yes   /// no 
+      obj[stringObj] = (obj[stringObj] || 0) + 1;
+      return obj;
+    }, {});
+
+
+    this.setState(currentState =>{
+
+      let boardArray =  [...currentState.boardArray]
+      let answer = [];
+      for (let prop in occurrences) {
+        let a = Object.keys(prop);
+        let positionObj = JSON.parse(prop);
+        let count = occurrences[prop];
+
+        let YandX = this.setXandY(positionObj.index, rowSize);
+        let cellStatus = changeStatus(count, boardArray, positionObj.index)
+        if (cellStatus != null) {
+          let change = { position: positionObj.index, count, positionTwo: YandX, status: cellStatus }
+          answer.push(change);
+        }
+
+
+      }
+
+      answer.forEach(ele =>{
+        boardArray[ele.position].status = ele.status;
+      })
+      return{
+
+        boardArray: boardArray
+      }
+    })
+
+
+    function modulo(divided, divisor){
+      return ((divided % divisor) + divisor) % divisor;
+    }
+    function changeStatus(count, boardArray, position){
+      // change status if it meets criteria for conwaygameof life and skip redundant
+      let newStatus;
+      if (count === 3 && boardArray[position].status !== 'alive'){
+        newStatus = 'alive';
+      }
+      else if ((count >= 4 || count <= 1) && boardArray[position].status !== 'dead'){
+        newStatus = 'dead'
+      }
+      return newStatus;
+    }
   }
 
   checkCellCycle(cellArray, cellStatus){
@@ -110,39 +147,33 @@ class App extends Component {
     })
   }
 
-  createBoard(size) {
+  createBoard(totalSize) {
     //Get the ranges of first and last row to make a top bottom tordial location connection
-    let lastNumberInFirstRow = this.state.boardSize.size;
-    let firstNumberInLastRow = this.state.boardSize.size * this.state.boardSize.size - this.state.boardSize.size;
-    let totalSize = this.state.boardSize.size * this.state.boardSize.size;
-    let startPositionAtOne = 1;
+    let sizeOfOneRow = this.state.boardSize.size;
+    // let firstNumberInLastRow = this.state.boardSize.size * this.state.boardSize.size - this.state.boardSize.size;
+ 
     
 
-    const boardArray = [...Array(size)].map((e, i ) => {
+    const boardArray = [...Array(totalSize)].map((e, i ) => {
    
-      let positionTwo = null;
-      let positionThree = null;
-      let positionFour = null;
-      if (i < lastNumberInFirstRow){
-        positionTwo = i + startPositionAtOne + totalSize;
-      }
-
-       if (i >= firstNumberInLastRow){
-        positionTwo = i + startPositionAtOne - totalSize;
-      }
-
-       if (((i + 1) % lastNumberInFirstRow) === 0) {
-        positionThree = i + startPositionAtOne;
-      }
-       if (((i + 1) % lastNumberInFirstRow) === 1) {
-        positionFour = i + startPositionAtOne;
-      }
-    
-      return { status: 'dead', position: i + startPositionAtOne, positionTwo, positionThree, positionFour};
+  
+    let positionTwo = this.setXandY(i, sizeOfOneRow);
+      
+     // + startPositionAtOne
+ 
+      return { status: 'dead', position: i , positionTwo};
     });
-    boardArray[54].status = 'alive';
-    console.log("boardArray", boardArray);
+    boardArray[11].status = 'alive';
+    boardArray[1].status = 'alive';
+    
+    // console.log("boardArray", boardArray);
     return boardArray;
+  }
+  setXandY(index, sizeOfOneRow){
+    let x = index % sizeOfOneRow;
+    let y = Math.floor(index / sizeOfOneRow);
+    let positionTwo = { y: y, x: x };
+    return positionTwo;
   }
 
   handleSquareClick(index, event){

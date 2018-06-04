@@ -46,7 +46,7 @@ class Square extends PureComponent {
      classArray = classArray.join(' ');
   //  console.log('renderCalled', this.props.index + 1);
     return (
-      <div onClick={this._onClick} className={classArray}><p>{this.props.index + 1}</p></div>
+      <div onClick={this._onClick} className={classArray}><p>{this.props.index }</p></div>
     )
   }
 
