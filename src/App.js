@@ -10,12 +10,16 @@ class App extends Component {
     this.state= {
       boardSize: {size: 10, classSize: 'cell-small'},
       
-      boardArray: []
+      boardArray: [],
+      runSim: false
     }
 
     this.handleRunGame = this.handleRunGame.bind(this);
     this.handleSquareClick = this.handleSquareClick.bind(this);
     this.handleClearGame = this.handleClearGame.bind(this);
+
+
+  //  this.gameAlgo = this.gameAlgo.bind(this);
   }
 
   componentDidMount(){
@@ -24,9 +28,65 @@ class App extends Component {
    this.setState({boardArray})
   }
 
+  componentDidUpdate(prevProps, prevState){
+    console.log("prevState.runSim", prevState.runSim)
+    console.log("prevState.runSim", this.state.runSim)
+    if (this.state.runSim === true ){
+      // this.startRunGame();
+      // this.startRunGame();
+    }
+
+  }
+  startRunGame(e){
+   // console.log(e);
+    let runSim = !this.state.runSim
+    this.setState({ runSim: runSim});
+  
+  }
+
+ // startRunGame
   handleRunGame(e){
+  //  this.gameAlgo();
     console.log(e);
-    this.gameAlgo();
+   
+      this.gameAlgo();
+    const randomInterval = (() => {
+      // const same = (min, max) => Math.random() * (max - min) + min;
+      const same = (min, max) => max - min;
+      return (callback, min, max) => {
+        const time = {
+          start: performance.now(),
+          total: same(min, max)
+        };
+        const tick = now => {
+          if (time.total <= now - time.start) {
+            time.start = now;
+            time.total = same(min, max);
+         
+            callback();
+          }
+          requestAnimationFrame(tick);
+        };
+      
+        requestAnimationFrame(tick);
+      };
+      // let runSim = !this.state.runSim
+      // this.setState({ runSim: runSim });
+    })();
+
+
+    // setInterval(this.handleRunGame, 1000);
+    if (typeof e === 'object'){
+      console.log("typeof e", typeof e)
+    //  debugger;
+      randomInterval(() => this.handleRunGame(), 4000, 5000); 
+   
+    }
+   
+    // randomInterval(, 1000, 5000)
+  
+    // requestAnimationFrame(this.handleRunGame);
+  
   }
 
   gameAlgo(){
@@ -39,7 +99,7 @@ class App extends Component {
 
       return cell.status === 'alive';
     })
-    let arrayToCount = []
+    let arrayToCount = [];
     aliveArray.forEach(cell =>{
       // for each alive cell add 1 count to each neighbor
       let setOfNeightbors = cellSearchModifiers.map(search => {
@@ -52,14 +112,11 @@ class App extends Component {
       })
 
       arrayToCount = [...arrayToCount, ...setOfNeightbors]
-      console.log("arrayToCount", arrayToCount);
     });
 
     // count how many times a cell touches a neighbor alive or dead cell
     const occurrences = arrayToCount.reduce(function (obj, item) {
       let stringObj = JSON.stringify(item);
-
-
                           //yes   /// no 
       obj[stringObj] = (obj[stringObj] || 0) + 1;
       return obj;
@@ -71,7 +128,7 @@ class App extends Component {
       let boardArray =  [...currentState.boardArray]
       let answer = [];
       for (let prop in occurrences) {
-        let a = Object.keys(prop);
+   
         let positionObj = JSON.parse(prop);
         let count = occurrences[prop];
 
@@ -115,19 +172,16 @@ class App extends Component {
 
   handleClearGame(e){
     let size = this.state.boardSize.size * this.state.boardSize.size;
-    const boardArray = [...Array(size)].map((e, i) => {
-      //  let a = i.toString()
-      return 'dead';
-    });
+ 
     
     this.setState(currentState =>{
-      let newArray = [...currentState.boardArray];
-      newArray.forEach(element => {
+      let clearArray = [...currentState.boardArray];
+      clearArray.forEach(element => {
         element.status = 'dead';
       })
 
       return{
-        boardArray: newArray
+        boardArray: clearArray
       }
     })
   }
@@ -150,8 +204,17 @@ class App extends Component {
     });
     boardArray[11].status = 'alive';
     boardArray[1].status = 'alive';
+    boardArray[33].status = 'alive';
+    boardArray[35].status = 'alive';
+    boardArray[34].status = 'alive';
+    boardArray[53].status = 'alive';
+    boardArray[43].status = 'alive';
+    boardArray[44].status = 'alive';
+    boardArray[45].status = 'alive';
+    boardArray[53].status = 'alive';
+    boardArray[54].status = 'alive';
+    boardArray[55].status = 'alive';
     
-    // console.log("boardArray", boardArray);
     return boardArray;
   }
   setXandY(index, sizeOfOneRow){
@@ -171,8 +234,7 @@ class App extends Component {
         boardArray: newArray
       }
     })
-    console.log('index', index);
-    console.log('event', event);
+ 
   }
 
 
