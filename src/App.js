@@ -1,25 +1,26 @@
+
 import React, { Component } from 'react';
-import ControlGameBtns from './components/controlGameBtns.js'
+import ControlGameBtns from './components/buttons/controlGameBtns.js'
 
 import GameBoard from './components/GameBoard';
+import SizeBtns from './components/buttons/SizeBtns';
+import GameSpeed from './components/buttons/GameSpeed';
 
 class App extends Component {
   constructor(props){
     super(props);
 
     this.state= {
-      boardSize: {size: 10, classSize: 'cell-small'},
+      boardSize: {size: 40, classSize: 'cell-small'},
       
       boardArray: [],
-      runSim: false
+      animationId: "",
     }
 
     this.handleRunGame = this.handleRunGame.bind(this);
     this.handleSquareClick = this.handleSquareClick.bind(this);
     this.handleClearGame = this.handleClearGame.bind(this);
 
-
-  //  this.gameAlgo = this.gameAlgo.bind(this);
   }
 
   componentDidMount(){
@@ -30,26 +31,20 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState){
     console.log("prevState.runSim", prevState.runSim)
-    console.log("prevState.runSim", this.state.runSim)
-    if (this.state.runSim === true ){
-      // this.startRunGame();
-      // this.startRunGame();
+    console.log("this.state.runSim", this.state.runSim)
+    if(this.state.boardSize.size != prevState.boardSize.size){
+      let size = this.state.boardSize.size * this.state.boardSize.size;
+      this.handleClearGame();
+      let boardArray = this.createBoard(size);
+      this.setState({ boardArray })
     }
 
   }
-  startRunGame(e){
-   // console.log(e);
-    let runSim = !this.state.runSim
-    this.setState({ runSim: runSim});
-  
-  }
 
- // startRunGame
   handleRunGame(e){
-  //  this.gameAlgo();
-    console.log(e);
-   
-      this.gameAlgo();
+
+    this.gameAlgo();
+
     const randomInterval = (() => {
       // const same = (min, max) => Math.random() * (max - min) + min;
       const same = (min, max) => max - min;
@@ -65,28 +60,22 @@ class App extends Component {
          
             callback();
           }
-          requestAnimationFrame(tick);
+          let animationId =  requestAnimationFrame(tick);
+          this.setState({ animationId });
         };
       
-        requestAnimationFrame(tick);
+        let animationId =  requestAnimationFrame(tick);
+      
       };
       // let runSim = !this.state.runSim
       // this.setState({ runSim: runSim });
     })();
 
-
-    // setInterval(this.handleRunGame, 1000);
     if (typeof e === 'object'){
-      console.log("typeof e", typeof e)
-    //  debugger;
+      console.log("typeof e", typeof e);
       randomInterval(() => this.handleRunGame(), 4000, 5000); 
    
     }
-   
-    // randomInterval(, 1000, 5000)
-  
-    // requestAnimationFrame(this.handleRunGame);
-  
   }
 
   gameAlgo(){
@@ -95,24 +84,9 @@ class App extends Component {
     const cellSearchModifiers = [{ y: 0, x: -1 }, { y: 1, x: -1 },{ y: 1, x: 0 }, { y: 1, x: 1 },
       { y: 0, x: 1 }, { y: -1, x: +1 }, { y: -1, x: 0 }, { y: -1, x: -1 },  { y: 0, x: 0 }]
 //
-    const aliveArray = boardArray.filter(cell =>{
+    const arrayToCount = aliveCellsCountNeighbors();
 
-      return cell.status === 'alive';
-    })
-    let arrayToCount = [];
-    aliveArray.forEach(cell =>{
-      // for each alive cell add 1 count to each neighbor
-      let setOfNeightbors = cellSearchModifiers.map(search => {
-        let newY = search.y + cell.positionTwo.y;
-        let newX = search.x + cell.positionTwo.x;
-        newY = modulo(newY, rowSize) * rowSize;
-        newX = modulo(newX, rowSize);
-        let index = newY + newX;
-        return {index};
-      })
-
-      arrayToCount = [...arrayToCount, ...setOfNeightbors]
-    });
+  
 
     // count how many times a cell touches a neighbor alive or dead cell
     const occurrences = arrayToCount.reduce(function (obj, item) {
@@ -138,18 +112,41 @@ class App extends Component {
           let change = { position: positionObj.index, count, positionTwo: YandX, status: cellStatus }
           answer.push(change);
         }
-
-
       }
 
       answer.forEach(ele =>{
         boardArray[ele.position].status = ele.status;
       })
       return{
-
         boardArray: boardArray
       }
     })
+
+
+    function aliveCellsCountNeighbors() {
+      const aliveArray = boardArray.filter(cell => {
+
+        return cell.status === 'alive';
+      })
+      let arrayToCount = [];
+      aliveArray.forEach(cell => {
+        // for each alive cell add 1 count to each neighbor
+        let setOfNeightbors = cellSearchModifiers.map(search => {
+          let newY = search.y + cell.positionTwo.y;
+          let newX = search.x + cell.positionTwo.x;
+          newY = modulo(newY, rowSize) * rowSize;
+          newX = modulo(newX, rowSize);
+          let index = newY + newX;
+          return { index };
+        })
+
+        arrayToCount = [...arrayToCount, ...setOfNeightbors]
+      });
+
+      return arrayToCount;
+
+
+    }
 
 
     function modulo(divided, divisor){
@@ -168,7 +165,11 @@ class App extends Component {
     }
   }
 
+  stopGameLoop = () => {
 
+
+    cancelAnimationFrame(this.state.animationId);
+  }
 
   handleClearGame(e){
     let size = this.state.boardSize.size * this.state.boardSize.size;
@@ -184,9 +185,11 @@ class App extends Component {
         boardArray: clearArray
       }
     })
+    this.stopGameLoop();
   }
 
   createBoard(totalSize) {
+    // console.log("boardArray", totalSize);
     //Get the ranges of first and last row to make a top bottom tordial location connection
     let sizeOfOneRow = this.state.boardSize.size;
     // let firstNumberInLastRow = this.state.boardSize.size * this.state.boardSize.size - this.state.boardSize.size;
@@ -202,18 +205,19 @@ class App extends Component {
  
       return { status: 'dead', position: i , positionTwo};
     });
-    boardArray[11].status = 'alive';
-    boardArray[1].status = 'alive';
-    boardArray[33].status = 'alive';
-    boardArray[35].status = 'alive';
-    boardArray[34].status = 'alive';
-    boardArray[53].status = 'alive';
-    boardArray[43].status = 'alive';
-    boardArray[44].status = 'alive';
-    boardArray[45].status = 'alive';
-    boardArray[53].status = 'alive';
-    boardArray[54].status = 'alive';
-    boardArray[55].status = 'alive';
+   
+    // boardArray[11].status = 'alive';
+    // boardArray[1].status = 'alive';
+    // boardArray[33].status = 'alive';
+    // boardArray[35].status = 'alive';
+    // boardArray[34].status = 'alive';
+    // // boardArray[53].status = 'alive';
+    // boardArray[43].status = 'alive';
+    // boardArray[44].status = 'alive';
+    boardArray[39].status = 'alive';
+    boardArray[49].status = 'alive';
+    boardArray[59].status = 'alive';
+    // boardArray[59].status = 'alive';
     
     return boardArray;
   }
@@ -236,19 +240,43 @@ class App extends Component {
     })
  
   }
+  handleChangeSize = (e) =>{
+    console.log('ee',e.currentTarget.dataset.size);
+    let boardSize = Object.assign({}, this.state.boardSize); 
+    boardSize.size = parseInt(e.currentTarget.dataset.size);
+    // debugger;
 
-
+    this.setState({boardSize})
+  }
   render() {
     console.log(this.state.boardArray);
     return (
       <div className="App">
      
         <main>
-          <div>
-            <ControlGameBtns runGame={this.handleRunGame} clearGame={this.handleClearGame} />
+          <div className="top-info">
+            <div className="title">Conway's Game Of Life</div>
+            <div className="title"><p>things you can do</p></div>
+            <div className="video-display">Click here for how it works</div>
+            <div className="stats">
+              <p>Generations: <span>1</span></p>
+              <p>Population: <span>2</span></p>
+            </div>
           </div>
-          <div className="game-board">
-            <GameBoard boardArray={this.state.boardArray} squareClick={this.handleSquareClick}/>
+        
+            <div className="game-container">
+              <div className="left-btn-container">
+                <div className="game-control"> <ControlGameBtns stopGameLoop={this.stopGameLoop} runGame={this.handleRunGame} clearGame={this.handleClearGame} /></div>
+              
+                <div className="size-control"><SizeBtns changeSize={this.handleChangeSize} /></div>
+              </div>
+       
+              <div className="game-board">
+                <GameBoard boardArray={this.state.boardArray} squareClick={this.handleSquareClick}/>
+              </div>
+
+            <div className="right-btn-container"><div className="slidecontainer"></div></div>
+           
           </div>
         </main>
           
@@ -257,5 +285,5 @@ class App extends Component {
     );
   }
 }
-
+// 
 export default App;

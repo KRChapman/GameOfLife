@@ -4,10 +4,6 @@ import React, { PureComponent } from 'react';
 function GameBoard(props) {
 
 
-
-
-
-
     return (
      
         
@@ -27,15 +23,8 @@ class Square extends PureComponent {
   constructor(props){
     super(props)
 
-    // this.state = {
-    //   boardArray: []
-    // }
     this._onClick = this._onClick.bind(this);
   }
-
-  
-
-  
 
   _onClick(e) {
     this.props.squareClick(this.props.index, e);
@@ -46,12 +35,12 @@ class Square extends PureComponent {
      classArray = classArray.join(' ');
   //  console.log('renderCalled', this.props.index + 1);
     return (
-      <div onClick={this._onClick} className={classArray}><p>{this.props.index }</p></div>
+      <div onClick={this._onClick} className={classArray}></div>
     )
   }
 
-
 }
 
+//<p>{this.props.index }</p>
 
 export default GameBoard;
