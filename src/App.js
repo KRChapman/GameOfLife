@@ -15,6 +15,8 @@ class App extends Component {
       
       boardArray: [],
       animationId: "",
+
+      sliderSpeedValue: 35
     }
 
     this.handleRunGame = this.handleRunGame.bind(this);
@@ -30,8 +32,7 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps, prevState){
-    console.log("prevState.runSim", prevState.runSim)
-    console.log("this.state.runSim", this.state.runSim)
+  
     if(this.state.boardSize.size != prevState.boardSize.size){
       let size = this.state.boardSize.size * this.state.boardSize.size;
       this.handleClearGame();
@@ -249,6 +250,15 @@ class App extends Component {
 
     this.setState({boardSize})
   }
+
+  handleSliderSpeed = (e) =>{
+    console.log("handleSliderSpeed e", e.currentTarget.value);
+    let sliderSpeedValue = parseInt(e.currentTarget.value);
+
+    this.setState({sliderSpeedValue });
+
+    // debugger;
+  }
   render() {
 
     let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
@@ -279,7 +289,7 @@ class App extends Component {
               <GameBoard boardArray={this.state.boardArray} squareClick={this.handleSquareClick} />
               </div>
 
-            <div className="right-btn-container"><div className="slidecontainer"></div></div>
+            <div className="right-btn-container"><div className="slidecontainer"><GameSpeed sliderSpeedValue={this.state.sliderSpeedValue} sliderSpeed={this.handleSliderSpeed}/></div></div>
            
           </div>
         </main>
