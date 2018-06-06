@@ -39,7 +39,9 @@ main{
 
 
 .game-container{
-  border: 8px solid black;
+  border: 8px solid rgb(0,0,0);
+  
+// color: rgb(149, 14, 146)
   border-radius: 5px;
   width: 1403px;
   min-width: 1402px;
@@ -53,9 +55,9 @@ main{
 .game-board{
   // border: 1px solid black;
   //  margin-right: 50px;
-  width: 1200px;
+
   // width: 1000px;
-  width: 800px;
+  // width: 800px;
   // height: 600px;
 
   display: flex;
@@ -63,6 +65,15 @@ main{
   flex-wrap: wrap;
 
 
+}
+.small-board{
+   width: 800px;
+}
+.medium-board{
+  width: 1000px;
+}
+.large-board{
+  width: 1200px;
 }
 // .game-board{
 //   border: 1px solid black;

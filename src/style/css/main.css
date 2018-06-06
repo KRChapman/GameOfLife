@@ -413,12 +413,12 @@ body {
   display: inline-block;
   flex-basis: 91px;
   flex-grow: 1;
-  background-color: #010731; }
+  background-color: #030a44; }
 
 .right-btn-container {
   flex-basis: 91px;
   flex-grow: 1;
-  background-color: #010731; }
+  background-color: #030a44; }
 
 .game-control {
   margin-top: 100px; }
@@ -454,10 +454,17 @@ main {
   justify-content: center; }
 
 .game-board {
-  width: 1200px;
-  width: 800px;
   display: flex;
   flex-wrap: wrap; }
+
+.small-board {
+  width: 800px; }
+
+.medium-board {
+  width: 1000px; }
+
+.large-board {
+  width: 1200px; }
 
 .alive {
   background: #950e92; }

@@ -11,7 +11,7 @@ class App extends Component {
     super(props);
 
     this.state= {
-      boardSize: {size: 40, classSize: 'cell-small'},
+      boardSize: {size: 60, classSize: 'large-board'},
       
       boardArray: [],
       animationId: "",
@@ -244,12 +244,16 @@ class App extends Component {
     console.log('ee',e.currentTarget.dataset.size);
     let boardSize = Object.assign({}, this.state.boardSize); 
     boardSize.size = parseInt(e.currentTarget.dataset.size);
+    boardSize.classSize = e.currentTarget.dataset.classSize;
     // debugger;
 
     this.setState({boardSize})
   }
   render() {
-    console.log(this.state.boardArray);
+
+    let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
+
+    console.log(gameBoardClasses);
     return (
       <div className="App">
      
@@ -271,8 +275,8 @@ class App extends Component {
                 <div className="size-control"><SizeBtns changeSize={this.handleChangeSize} /></div>
               </div>
        
-              <div className="game-board">
-                <GameBoard boardArray={this.state.boardArray} squareClick={this.handleSquareClick}/>
+            <div className={`${gameBoardClasses}`}>
+              <GameBoard boardArray={this.state.boardArray} squareClick={this.handleSquareClick} />
               </div>
 
             <div className="right-btn-container"><div className="slidecontainer"></div></div>
