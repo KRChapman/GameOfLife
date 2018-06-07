@@ -16,7 +16,7 @@ class App extends Component {
       boardArray: [],
       animationId: "",
 
-      sliderSpeedValue: 35
+      sliderSpeedValue: 90
     }
 
     this.handleRunGame = this.handleRunGame.bind(this);
@@ -43,21 +43,23 @@ class App extends Component {
   }
 
   handleRunGame(e){
+    
 
     this.gameAlgo();
-
+    const max = 10000;
+  
     const randomInterval = (() => {
       // const same = (min, max) => Math.random() * (max - min) + min;
-      const same = (min, max) => max - min;
-      return (callback, min, max) => {
+      const same = (max) => max - (this.state.sliderSpeedValue * 100 - 1);
+      return (callback, max) => {
         const time = {
           start: performance.now(),
-          total: same(min, max)
+          total: same( max)
         };
         const tick = now => {
           if (time.total <= now - time.start) {
             time.start = now;
-            time.total = same(min, max);
+            time.total = same( max);
          
             callback();
           }
@@ -74,7 +76,7 @@ class App extends Component {
 
     if (typeof e === 'object'){
       console.log("typeof e", typeof e);
-      randomInterval(() => this.handleRunGame(), 4000, 5000); 
+      randomInterval(() => this.handleRunGame(), max); 
    
     }
   }
@@ -207,14 +209,14 @@ class App extends Component {
       return { status: 'dead', position: i , positionTwo};
     });
    
-    // boardArray[11].status = 'alive';
-    // boardArray[1].status = 'alive';
-    // boardArray[33].status = 'alive';
-    // boardArray[35].status = 'alive';
-    // boardArray[34].status = 'alive';
-    // // boardArray[53].status = 'alive';
-    // boardArray[43].status = 'alive';
-    // boardArray[44].status = 'alive';
+    boardArray[11].status = 'alive';
+    boardArray[1].status = 'alive';
+    boardArray[33].status = 'alive';
+    boardArray[35].status = 'alive';
+    boardArray[34].status = 'alive';
+    // boardArray[53].status = 'alive';
+    boardArray[43].status = 'alive';
+    boardArray[44].status = 'alive';
     boardArray[39].status = 'alive';
     boardArray[49].status = 'alive';
     boardArray[59].status = 'alive';
@@ -263,7 +265,7 @@ class App extends Component {
 
     let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
 
-    console.log(gameBoardClasses);
+    // console.log(gameBoardClasses);
     return (
       <div className="App">
      

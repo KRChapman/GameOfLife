@@ -125,7 +125,7 @@ main{
     -webkit-transform: rotate(-90deg);
     -webkit-transform-origin:right, top;
 
-     
+      border: 5px solid grey;
     position: relative;
     top:105px;
      z-index: 0;
@@ -139,8 +139,9 @@ main{
     height: 25px;
   
     z-index: 1;
-    border-radius: 100%;
+    border-radius: 50%;
     background: grey;
+   
     cursor: pointer;
    position: relative;
     // top:60px;
