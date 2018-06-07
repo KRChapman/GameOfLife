@@ -78,18 +78,21 @@ main{
 }
 .fast-text{
   
-      color: red;
+      color: rgb(169, 34, 34);
       position: relative;
       // right: 15%;
       top: -35px;
+       text-transform: uppercase;
       // left: 0;
   
 
 }
 .slow-text{
   
-      color: red;
+      
+      color: rgb(169, 34, 34);
       position: relative;
+      text-transform: uppercase;
       // right: 15%;
       top: 50px;
       // left: 0;
@@ -101,11 +104,13 @@ main{
     width: 100%; /* Width of the outside container */
     height: 151px;
     text-align: center;
-    border: 1px solid red;
+    // border: 1px solid red;
     margin: 0 auto;
 
     
   }
+
+
 
 .slider {
     -webkit-appearance: none;
@@ -148,9 +153,23 @@ main{
 }
 
 .slider::-moz-range-thumb {
+       -webkit-appearance: none;
+   //  appearance: slider-vertical;
+  //  -webkit-appearance: slider-vertical; /* WebKit */
     width: 25px;
     height: 25px;
-    border-radius: 100%;
-    background: #4CAF50;
+  
+    z-index: 1;
+    border-radius: 50%;
+    background: grey;
+   
     cursor: pointer;
+   position: relative;
+}
+
+
+.add-cells-container{
+  position: relative;
+
+  top: 150px;
 }

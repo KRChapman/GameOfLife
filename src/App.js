@@ -5,6 +5,9 @@ import ControlGameBtns from './components/buttons/controlGameBtns.js'
 import GameBoard from './components/GameBoard';
 import SizeBtns from './components/buttons/SizeBtns';
 import GameSpeed from './components/buttons/GameSpeed';
+import AddCellsBtns from './components/buttons/AddCells';
+
+import { modulo, setXandY } from './helpers/helpers'
 
 class App extends Component {
   constructor(props){
@@ -16,13 +19,19 @@ class App extends Component {
       boardArray: [],
       animationId: "",
 
+      gliders: {
+                rightGlider: false,
+                leftGlider: false,
+              },
+
+
       sliderSpeedValue: 90
     }
 
     this.handleRunGame = this.handleRunGame.bind(this);
     this.handleSquareClick = this.handleSquareClick.bind(this);
     this.handleClearGame = this.handleClearGame.bind(this);
-
+    this.handleAddGroupCells = this.handleAddGroupCells.bind(this);
   }
 
   componentDidMount(){
@@ -39,6 +48,9 @@ class App extends Component {
       let boardArray = this.createBoard(size);
       this.setState({ boardArray })
     }
+    // if(){
+     
+    // }
 
   }
 
@@ -50,7 +62,8 @@ class App extends Component {
   
     const randomInterval = (() => {
       // const same = (min, max) => Math.random() * (max - min) + min;
-      const same = (max) => max - (this.state.sliderSpeedValue * 100 - 1);
+      const same = (max) => max - (this.state.sliderSpeedValue * 100 + 99);
+    ;
       return (callback, max) => {
         const time = {
           start: performance.now(),
@@ -60,7 +73,7 @@ class App extends Component {
           if (time.total <= now - time.start) {
             time.start = now;
             time.total = same( max);
-         
+            console.log('same', time.total)
             callback();
           }
           let animationId =  requestAnimationFrame(tick);
@@ -93,6 +106,7 @@ class App extends Component {
 
     // count how many times a cell touches a neighbor alive or dead cell
     const occurrences = arrayToCount.reduce(function (obj, item) {
+      //turn object into string so it can be used as a key
       let stringObj = JSON.stringify(item);
                           //yes   /// no 
       obj[stringObj] = (obj[stringObj] || 0) + 1;
@@ -105,11 +119,11 @@ class App extends Component {
       let boardArray =  [...currentState.boardArray]
       let answer = [];
       for (let prop in occurrences) {
-   
+          //turn string back to object 
         let positionObj = JSON.parse(prop);
         let count = occurrences[prop];
 
-        let YandX = this.setXandY(positionObj.index, rowSize);
+        let YandX = setXandY(positionObj.index, rowSize);
         let cellStatus = changeStatus(count, boardArray, positionObj.index)
         if (cellStatus != null) {
           let change = { position: positionObj.index, count, positionTwo: YandX, status: cellStatus }
@@ -152,9 +166,7 @@ class App extends Component {
     }
 
 
-    function modulo(divided, divisor){
-      return ((divided % divisor) + divisor) % divisor;
-    }
+  
     function changeStatus(count, boardArray, position){
       // change status if it meets criteria for conwaygameof life and skip redundant
       let newStatus;
@@ -202,21 +214,21 @@ class App extends Component {
     const boardArray = [...Array(totalSize)].map((e, i ) => {
    
   
-    let positionTwo = this.setXandY(i, sizeOfOneRow);
+    let positionTwo = setXandY(i, sizeOfOneRow);
       
      // + startPositionAtOne
  
       return { status: 'dead', position: i , positionTwo};
     });
    
-    boardArray[11].status = 'alive';
-    boardArray[1].status = 'alive';
-    boardArray[33].status = 'alive';
-    boardArray[35].status = 'alive';
-    boardArray[34].status = 'alive';
-    // boardArray[53].status = 'alive';
-    boardArray[43].status = 'alive';
-    boardArray[44].status = 'alive';
+    // boardArray[11].status = 'alive';
+    // boardArray[1].status = 'alive';
+    // boardArray[33].status = 'alive';
+    // boardArray[35].status = 'alive';
+    // boardArray[34].status = 'alive';
+    // // boardArray[53].status = 'alive';
+    // boardArray[43].status = 'alive';
+    // boardArray[44].status = 'alive';
     boardArray[39].status = 'alive';
     boardArray[49].status = 'alive';
     boardArray[59].status = 'alive';
@@ -224,14 +236,20 @@ class App extends Component {
     
     return boardArray;
   }
-  setXandY(index, sizeOfOneRow){
-    let x = index % sizeOfOneRow;
-    let y = Math.floor(index / sizeOfOneRow);
-    let positionTwo = { y: y, x: x };
-    return positionTwo;
-  }
 
+  gliderClick(){
+    
+  }
   handleSquareClick(index, event){
+    let gliders = this.state.gliders;
+
+  
+    // for (const prop in gliders) {
+    //   if (gliders.hasOwnProperty(prop) && ) {
+        
+        
+    //   }
+    // }
 
     this.setState(currentState =>{
       let newArray = [...currentState.boardArray];
@@ -261,6 +279,34 @@ class App extends Component {
 
     // debugger;
   }
+
+  handleAddGroupCells(e){
+
+   
+    console.log(e);
+   // debugger;
+    let gliders = Object.assign({}, this.state.gliders); 
+
+    const nameOfGlider = e.target.name;
+    gliders[nameOfGlider] = !gliders[nameOfGlider];
+
+    const keysArray = Object.keys(this.state.gliders);
+
+    let alreadyChangedIndex = keysArray.findIndex(ele =>{
+        return ele === nameOfGlider;
+      })
+      
+    keysArray.splice(alreadyChangedIndex, 1);
+
+    keysArray.forEach(ele =>{
+      gliders[ele] = false;
+    })
+
+    this.setState({ gliders});
+  }
+
+
+
   render() {
 
     let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
@@ -291,7 +337,12 @@ class App extends Component {
               <GameBoard boardArray={this.state.boardArray} squareClick={this.handleSquareClick} />
               </div>
 
-            <div className="right-btn-container"><div className="slidecontainer"><GameSpeed sliderSpeedValue={this.state.sliderSpeedValue} sliderSpeed={this.handleSliderSpeed}/></div></div>
+            <div className="right-btn-container">
+              <div className="slidecontainer">
+                <GameSpeed sliderSpeedValue={this.state.sliderSpeedValue} sliderSpeed={this.handleSliderSpeed}/>
+              </div>
+              <div className="add-cells-container" onClick={this.handleAddGroupCells}><AddCellsBtns addCells={this.handleAddCells}/></div>
+            </div>
            
           </div>
         </main>

@@ -429,6 +429,28 @@ body {
 .right-btn-container {
   display: inline-block; }
 
+.game-control {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; }
+  .game-control button {
+    background-color: #535353;
+    border: none;
+    color: #000016;
+    margin: 3px;
+    width: 81px; }
+
+.size-control {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; }
+  .size-control button {
+    background-color: #535353;
+    color: #000016;
+    border: none;
+    margin: 3px;
+    width: 81px; }
+
 .App {
   width: 100%;
   height: 100%; }
@@ -470,13 +492,15 @@ main {
   background: #950e92; }
 
 .fast-text {
-  color: red;
+  color: #a92222;
   position: relative;
-  top: -35px; }
+  top: -35px;
+  text-transform: uppercase; }
 
 .slow-text {
-  color: red;
+  color: #a92222;
   position: relative;
+  text-transform: uppercase;
   top: 50px; }
 
 .slidecontainer {
@@ -484,7 +508,6 @@ main {
   /* Width of the outside container */
   height: 151px;
   text-align: center;
-  border: 1px solid red;
   margin: 0 auto; }
 
 .slider {
@@ -519,10 +542,17 @@ main {
   position: relative; }
 
 .slider::-moz-range-thumb {
+  -webkit-appearance: none;
   width: 25px;
   height: 25px;
-  border-radius: 100%;
-  background: #4CAF50;
-  cursor: pointer; }
+  z-index: 1;
+  border-radius: 50%;
+  background: grey;
+  cursor: pointer;
+  position: relative; }
+
+.add-cells-container {
+  position: relative;
+  top: 150px; }
 
 /*# sourceMappingURL=main.css.map */

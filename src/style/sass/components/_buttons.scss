@@ -42,3 +42,38 @@
 .right-btn-container{
   display: inline-block;
 }
+
+
+  .game-control{
+   
+    button{
+      background-color: rgb(83, 83, 83);
+      border: none;
+       color:rgb(0, 0, 22);
+      margin: 3px;
+       width: 81px;
+
+      
+    }
+
+     display: flex;
+
+     flex-wrap: wrap;
+     justify-content: center;
+    
+  }
+  .size-control{
+    button{
+         background-color: rgb(83, 83, 83);
+         color:rgb(0, 0, 22);
+      border: none;
+       margin: 3px;
+       width: 81px;
+    }
+
+
+         display: flex;
+
+     flex-wrap: wrap;
+     justify-content: center;
+  }
