@@ -10,6 +10,7 @@ import Count from './components/buttons/count';
 
 import { modulo, setXandY, countLivingCells } from './helpers/helpers'
 import VideoDisplay from './components/videoDisplay.js';
+import InfoBtns from './components/buttons/infoBtns.js';
 
 class App extends Component {
   constructor(props){
@@ -31,6 +32,7 @@ class App extends Component {
       generations: 0,
       population: 0,
       videoShow: false,
+      textShow: false,
     }
 
     this.handleRunGame = this.handleRunGame.bind(this);
@@ -38,6 +40,7 @@ class App extends Component {
     this.handleClearGame = this.handleClearGame.bind(this);
     this.handleAddGroupCells = this.handleAddGroupCells.bind(this);
     this.showVideo = this.showVideo.bind(this);
+    this.showText = this.showText.bind(this);
   }
 
   componentDidMount(){
@@ -69,11 +72,10 @@ class App extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState){
-  //  debugger;
+
     return nextState.boardArray !== this.state.boardArray || this.state.boardSize.size !== nextState.boardSize.size 
-          || this.state.videoShow !== nextState.videoShow ;
-    
-    // return true;
+      || this.state.textShow !== nextState.textShow || this.state.videoShow !== nextState.videoShow 
+
   }
 
   handleRunGame(e){
@@ -116,23 +118,12 @@ class App extends Component {
           this.setState({ animationId });
         };
       
-        let animationId =  requestAnimationFrame(tick);
+        requestAnimationFrame(tick);
        // this.setState({ animationId });
       };
 
     })();
 
-    // function test(callback) {
-
-    //   let gameLoop = function (time) {
-    //     callback();
-    //     countOneGeneration();
-    //     let animationId = requestAnimationFrame(gameLoop);
-    //     console.log(animationId);
-    //   }
-
-    //   let animationId = requestAnimationFrame(gameLoop)
-    // }
 
     if (typeof e === 'object'){
     
@@ -241,8 +232,6 @@ class App extends Component {
   }
 
   handleClearGame(e){
-    let size = this.state.boardSize.size * this.state.boardSize.size;
- 
     
     this.setState(currentState =>{
       let clearArray = [...currentState.boardArray];
@@ -265,8 +254,12 @@ class App extends Component {
     //Get the ranges of first and last row to make a top bottom tordial location connection
     let sizeOfOneRow = this.state.boardSize.size;
     const boardArray = [...Array(totalSize)].map((e, i ) => { 
-    let positionTwo = setXandY(i, sizeOfOneRow);
-      return { status: 'dead', position: i , positionTwo};
+      let status = 'dead';
+      // if(){
+
+      // }
+      let positionTwo = setXandY(i, sizeOfOneRow);
+      return { status: status, position: i , positionTwo};
     });
    
     // boardArray[11].status = 'alive';
@@ -357,7 +350,7 @@ class App extends Component {
   handleChangeSize = (e) =>{
     console.log('ee',e.currentTarget.dataset.size);
     let boardSize = Object.assign({}, this.state.boardSize); 
-    boardSize.size = parseInt(e.currentTarget.dataset.size);
+    boardSize.size = parseInt(e.currentTarget.dataset.size, 10);
     boardSize.classSize = e.currentTarget.dataset.classSize;
     // debugger;
 
@@ -376,7 +369,7 @@ class App extends Component {
 
   handleSliderSpeed = (e) =>{
     console.log("handleSliderSpeed e", e.currentTarget.value);
-    let sliderSpeedValue = parseInt(e.currentTarget.value);
+    let sliderSpeedValue = parseInt(e.currentTarget.value, 10);
 
     this.setState({sliderSpeedValue });
 
@@ -413,6 +406,13 @@ class App extends Component {
    
   }
 
+  showText(e){
+
+    let textShow = !this.state.textShow;
+
+    this.setState({textShow});
+  }
+
 
 
   render() {
@@ -436,13 +436,24 @@ class App extends Component {
 
     const videoShow = (function(app){
       let videoShowStatus = null;
-      let classShow = 'show';
       if (app.state.videoShow === true) {
         videoShowStatus = <VideoDisplay />    
       }
       return videoShowStatus;
     })(this);
-    console.log("videoShow", videoShow);
+
+    const textShow = (function(app){
+      let textInfo = null;
+      if (app.state.textShow === true) {
+        textInfo = <div className="info"><p>Click to change cell status. Life 3 neigbors. Death from 1 neighbor (endangerd) or 4 (overcrowding). Glide is preset pattern.</p></div>
+      }
+
+      return textInfo;
+
+
+    })(this);
+
+
     let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
     return (
       <div className="App">
@@ -450,8 +461,10 @@ class App extends Component {
         <main onClick={() => this.setState({ videoShow: false })}>
           <div className="title-info">
             <div className="title"><h1 className="main-title">Conway's Game Of Life</h1></div>
-            <div className="info"><p>Life created by 3 neigbors. Death from 1 neighbor (endangerd) or 4 (overcrowding). Glide is preset pattern.</p></div>
-            <button className="video-display" onClick={this.showVideo}>Video Explanation</button>
+
+            <InfoBtns video={this.showVideo} texts={this.showText}/>
+           
+          {textShow}
           </div >                  
           {videoShow}                
           <div className="stats">
