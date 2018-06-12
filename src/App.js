@@ -9,6 +9,7 @@ import AddCellsBtns from './components/buttons/AddCells';
 import Count from './components/buttons/count';
 
 import { modulo, setXandY, countLivingCells } from './helpers/helpers'
+import VideoDisplay from './components/videoDisplay.js';
 
 class App extends Component {
   constructor(props){
@@ -29,29 +30,35 @@ class App extends Component {
       sliderSpeedValue: 95,
       generations: 0,
       population: 0,
+      videoShow: false,
     }
 
     this.handleRunGame = this.handleRunGame.bind(this);
     this.handleSquareClick = this.handleSquareClick.bind(this);
     this.handleClearGame = this.handleClearGame.bind(this);
     this.handleAddGroupCells = this.handleAddGroupCells.bind(this);
+    this.showVideo = this.showVideo.bind(this);
   }
 
   componentDidMount(){
     let size = this.state.boardSize.size * this.state.boardSize.size;
     let boardArray = this.createBoard(size);
+    
+ 
    this.setState({boardArray})
   }
 
   componentDidUpdate(prevProps, prevState){
   
+    
     if(this.state.boardSize.size !== prevState.boardSize.size){
       let size = this.state.boardSize.size * this.state.boardSize.size;
     //  this.handleClearGame();
       let boardArray = this.createBoard(size);
-      this.setState({ boardArray })
+      this.setState({ boardArray });
     }
 
+    //update the number of living cells for population
     if(this.state.boardArray !== prevState.boardArray){
       const boardArray = this.state.boardArray
 
@@ -62,9 +69,11 @@ class App extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState){
+  //  debugger;
+    return nextState.boardArray !== this.state.boardArray || this.state.boardSize.size !== nextState.boardSize.size 
+          || this.state.videoShow !== nextState.videoShow ;
     
-    return nextState.boardArray !== this.state.boardArray;
-
+    // return true;
   }
 
   handleRunGame(e){
@@ -113,17 +122,17 @@ class App extends Component {
 
     })();
 
-    function test(callback) {
+    // function test(callback) {
 
-      let gameLoop = function (time) {
-        callback();
-        countOneGeneration();
-        let animationId = requestAnimationFrame(gameLoop);
-        console.log(animationId);
-      }
+    //   let gameLoop = function (time) {
+    //     callback();
+    //     countOneGeneration();
+    //     let animationId = requestAnimationFrame(gameLoop);
+    //     console.log(animationId);
+    //   }
 
-      let animationId = requestAnimationFrame(gameLoop)
-    }
+    //   let animationId = requestAnimationFrame(gameLoop)
+    // }
 
     if (typeof e === 'object'){
     
@@ -353,7 +362,17 @@ class App extends Component {
     // debugger;
 
     this.setState({boardSize})
-  }
+
+    // this.setState(currentState => {
+    //  let newArray = currentState.boardArray.slice();
+    //   return {
+    //     boardSize,
+    //     boardArray: newArray
+    //   }
+    
+    // })
+  }    
+  
 
   handleSliderSpeed = (e) =>{
     console.log("handleSliderSpeed e", e.currentTarget.value);
@@ -383,51 +402,62 @@ class App extends Component {
     this.setState({ gliders});
   }
 
+  showVideo(e){
+    e.stopPropagation();
+
+    let videoShow = !this.state.videoShow;
+    console.log(videoShow);
+    // this.setState({population: 99});
+    this.setState({videoShow})
+
+   
+  }
+
 
 
   render() {
-    const gliders = this.state.gliders;
-    let pressedBtnClass = (function () {
-                 
-                            let pressedBtn = {};
-                           for (const key in gliders) {
-                             if (gliders.hasOwnProperty(key) && gliders[key] === true) {
-                               pressedBtn[key] = 'pressed-btn';
-                              // break;    
-                            }
-                            else{
-                               pressedBtn[key] = "unpressed-btn";
-                            }
-                           }
+   
 
-                    return pressedBtn;
-                    })();
+    let pressedBtnClass = (function (app) {
+      const gliders = app.state.gliders;
+      let pressedBtn = {};
+      for (const key in gliders) {
+        if (gliders.hasOwnProperty(key) && gliders[key] === true) {
+          pressedBtn[key] = 'pressed-btn';
+        // break;    
+        }
+        else{
+            pressedBtn[key] = "unpressed-btn";
+        }
+      }
 
-                  
+      return pressedBtn;
+      })(this);
 
+    const videoShow = (function(app){
+      let videoShowStatus = null;
+      let classShow = 'show';
+      if (app.state.videoShow === true) {
+        videoShowStatus = <VideoDisplay />    
+      }
+      return videoShowStatus;
+    })(this);
+    console.log("videoShow", videoShow);
     let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
     return (
       <div className="App">
      
-        <main>
-          <div className="top-info">
-            <div className="title">Conway's Game Of Life</div>
-            <div className="title"><p>things you can do</p></div>
-            <div className="video-display">Click here for how it works 
-            <div>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/E8kUJL04ELA" 
-                frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>
-
-            </div>
-     
-              
-            </div>
-         
-          </div>
+        <main onClick={() => this.setState({ videoShow: false })}>
+          <div className="title-info">
+            <div className="title"><h1 className="main-title">Conway's Game Of Life</h1></div>
+            <div className="info"><p>Life created by 3 neigbors. Death from 1 neighbor (endangerd) or 4 (overcrowding). Glide is preset pattern.</p></div>
+            <button className="video-display" onClick={this.showVideo}>Video Explanation</button>
+          </div >                  
+          {videoShow}                
           <div className="stats">
             <Count generationsDisplay={this.state.generations} populationDisplay={this.state.population}/>
           </div>
-            <div className="game-container">
+          <div className="game-container" >
               <div className="left-btn-container">
                 <div className="game-control"> <ControlGameBtns stopGameLoop={this.stopGameLoop} runGame={this.handleRunGame} clearGame={this.handleClearGame} /></div>
               
