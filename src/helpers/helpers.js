@@ -21,14 +21,14 @@ export function countLivingCells(boardArray){
 
 }
 
-// export const countLivingCells = (boardArray) => {
-//   const countAlive = boardArray.filter(ele => (
-//     ele.status === 'alive'
-//   ))
-
-//   console.log("countAlive", countAlive);
-//   const population = countAlive.length;
-
-//   return population;
-
-// }
+export const cellModifiers = {
+  cellSearchModifiers: [{ y: 0, x: -1 }, { y: 1, x: -1 }, { y: 1, x: 0 }, { y: 1, x: 1 },
+                       { y: 0, x: 1 }, { y: -1, x: +1 }, { y: -1, x: 0 }, { y: -1, x: -1 }, 
+                       { y: 0, x: 0 }],
+  gliderPaterns : {
+                  rightGlider: [{ y: -1, x: 0 }, { y: 1, x: 0 },
+                  { y: 0, x: 1 }, { y: 1, x: 1 }, { y: 1, x: -1 }],
+                  leftGlider: [{ y: 0, x: -1 }, { y: 1, x: 0 },
+                  { y: -1, x: 0 }, { y: 1, x: -1 }, { y: 1, x: 1 }]
+  }
+}
