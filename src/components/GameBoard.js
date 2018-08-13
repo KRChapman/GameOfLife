@@ -33,14 +33,12 @@ class Square extends PureComponent {
   render(){
     let classArray = ['cell', `${this.props.className}`];
      classArray = classArray.join(' ');
-  //  console.log('renderCalled', this.props.index + 1);
+
     return (
       <div onClick={this._onClick} className={classArray}></div>
     )
   }
 
 }
-
-//<p>{this.props.index }</p>
 
 export default GameBoard;
