@@ -14,7 +14,6 @@ export function countLivingCells(boardArray){
     ele.status === 'alive'
   ))
 
-  console.log("countAlive", countAlive);
   const population = countAlive.length;
 
   return population;

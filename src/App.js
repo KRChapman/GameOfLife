@@ -60,7 +60,7 @@ class App extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState){
-    return nextState.boardArray !== this.state.boardArray || this.state.boardSize.size !== nextState.boardSize.size
+    return nextState.boardArray !== this.state.boardArray || this.state.boardSize.size !== nextState.boardSize.size || this.state.sliderSpeed !== nextState.sliderSpeed
     || this.state.textShow !== nextState.textShow || this.state.videoShow !== nextState.videoShow || this.state.gliders !== nextState.gliders
  
   }
@@ -97,7 +97,7 @@ class App extends Component {
             countOneGeneration();
           }
           let animationId =  requestAnimationFrame(tick);
-          console.log(animationId);
+        
           this.setState({ animationId });
         };
         requestAnimationFrame(tick);
@@ -310,7 +310,6 @@ class App extends Component {
     }
   }
   handleChangeSize = (e) =>{
-    console.log('ee',e.currentTarget.dataset.size);
     let boardSize = Object.assign({}, this.state.boardSize);
     boardSize.size = parseInt(e.currentTarget.dataset.size, 10);
     boardSize.classSize = e.currentTarget.dataset.classSize;
@@ -318,11 +317,10 @@ class App extends Component {
     this.setState({boardSize})
   }
 
-  handleSliderSpeed = (e) =>{
-    console.log("handleSliderSpeed e", e.currentTarget.value);
-    let sliderSpeedValue = parseInt(e.currentTarget.value, 10);
+  handleSliderSpeed = (sliderSpeedValue) =>{
 
-    this.setState({sliderSpeedValue });
+
+    this.setState({ sliderSpeedValue });
   }
 
   handleAddGroupCells(e){
@@ -348,7 +346,6 @@ class App extends Component {
     e.stopPropagation();
 
     let videoShow = !this.state.videoShow;
-    console.log(videoShow);
     this.setState({videoShow})
   }
 
