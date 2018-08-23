@@ -50,7 +50,7 @@ class App extends Component {
       let boardArray = this.createBoard(size);
       this.setState({ boardArray });
     }
-    //update the number of living cells for population
+
     if(this.state.boardArray !== prevState.boardArray){
       const boardArray = this.state.boardArray
       const population = countLivingCells(boardArray);
@@ -146,7 +146,6 @@ class App extends Component {
       })
       let arrayToCount = [];
       aliveArray.forEach(cell => {
-        // for each alive cell add 1 count to each neighbor
         let setOfNeightbors = cellSearchModifiers.map(search => {
           let newY = search.y + cell.positionTwo.y;
           let newX = search.x + cell.positionTwo.x;
@@ -154,10 +153,9 @@ class App extends Component {
           //javascripts % is just a remainder operator and does not wrap around with negative numbers
           // this function wraps the x and y around the number line for size of row for example -1 wraps to end
           newX = modulo(newX, rowSize);
-          let index = newY + newX;
+          let index = newY + newX;       
           return { index };
         })
-
         arrayToCount = [...arrayToCount, ...setOfNeightbors]
       });
       return arrayToCount
@@ -202,7 +200,6 @@ class App extends Component {
     let sizeOfOneRow = this.state.boardSize.size;
     let density = this.state.density;
     const blockIndexes = randomIndexes(density, sizeOfOneRow);
-
     const addCellsArray = addCells(blockIndexes, sizeOfOneRow);
 
     const boardArray = [...Array(totalSize)].map((e, i ) => {
@@ -239,9 +236,7 @@ class App extends Component {
      }
 
     function randomIndexes(density, size, indexArray = []){
-
        let randomNumber = Math.floor(Math.random() * (size * size));
-
 
        if (indexArray.length <= density){
          indexArray.push(randomNumber);
@@ -285,11 +280,9 @@ class App extends Component {
 
     function regularClick(index, copyArray) {
      let status = copyArray[index].status === 'alive' ? 'dead' : 'alive';
-     // copyArray[index].status
-      
+
       copyArray[index] = { ...copyArray[index], ...{ status } };
       return copyArray;
-
     }
     function gliderClick(index, prop, copyArray) {
 
@@ -318,8 +311,6 @@ class App extends Component {
   }
 
   handleSliderSpeed = (sliderSpeedValue) =>{
-
-
     this.setState({ sliderSpeedValue });
   }
 
@@ -333,7 +324,6 @@ class App extends Component {
     let alreadyChangedIndex = keysArray.findIndex(ele =>{
         return ele === nameOfGlider;
       })
-   // use remaining keys to change gliders in state back to false except clicked one
     keysArray.splice(alreadyChangedIndex, 1);
     keysArray.forEach(ele =>{
       gliders[ele] = false;
@@ -355,10 +345,14 @@ class App extends Component {
   }
 
   render() {
- 
       const gliders = this.state.gliders;
-      let pressedBtnClass = {};
+      const videoShow = this.state.videoShow ? <VideoDisplay /> : null;
+      const textShow = this.state.textShow ? <div className="info"><p>Click to change cell status. 
+        Birth 3 neigbors. Death from 1 neighbor (endangerd) or 4 (overcrowding). Glide is preset pattern.</p></div> : null;
 
+      let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
+
+      let pressedBtnClass = {};
       for (const key in gliders) {
         if (gliders.hasOwnProperty(key) && gliders[key] === true) {
           pressedBtnClass[key] = 'pressed-btn';
@@ -369,14 +363,6 @@ class App extends Component {
         }
       }
 
-
-
-    const videoShow = this.state.videoShow ? <VideoDisplay /> : null;
-   
-    const textShow = this.state.textShow ? <div className="info"><p>Click to change cell status. 
-      Birth 3 neigbors. Death from 1 neighbor (endangerd) or 4 (overcrowding). Glide is preset pattern.</p></div> : null;
-    
-    let gameBoardClasses = [ "game-board", `${this.state.boardSize.classSize}`].join(' ');
     return (
       <div className="App">
         <main onClick={() => this.setState({ videoShow: false })}>

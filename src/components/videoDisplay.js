@@ -6,7 +6,7 @@ function VideoDisplay(props) {
  
     <div className="video-container">  
 
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/E8kUJL04ELA"
+          <iframe title="Game Of Life" width="560" height="315" src="https://www.youtube.com/embed/E8kUJL04ELA"
             frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>
 
       </div>
