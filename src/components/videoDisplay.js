@@ -16,5 +16,5 @@ function VideoDisplay(props) {
 
   )
 }
-/* <div className={"video-modal"}> */
+
 export default VideoDisplay;
